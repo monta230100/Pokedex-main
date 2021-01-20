@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity{
         ImageButton btnTypes = findViewById(R.id.btnTypes);
         btnTypes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                TypeSearch();
             }
         });
         final Button btnLeft = findViewById(R.id.btnLeft);
@@ -109,4 +110,18 @@ public class MainActivity extends AppCompatActivity{
         });
         alert.show();
     }
+    public void TypeSearch(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Elige un tipo:")
+                .setItems(types.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        int type = which + 1;
+                        Log.i("logtest","" + (which+1));
+                        fetchTypes pokemons = new fetchTypes(Integer.toString(type));
+                        pokemons.execute();
+                    }
+                });
+        builder.create().show();
+    }
+
 }

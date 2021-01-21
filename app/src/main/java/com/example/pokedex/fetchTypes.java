@@ -1,5 +1,7 @@
 package com.example.pokedex;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,13 +21,13 @@ import java.util.ArrayList;
 
 public class fetchTypes extends AsyncTask<Void, Void, Void> {
     protected String data = "";
-    protected String results = "";
     protected ArrayList<String> strTypes; // Create an ArrayList object
-    protected String pokSearch;
 
-    public fetchTypes(String pokSearch) {
-        this.pokSearch = pokSearch;
+    public Activity act;
+
+    public fetchTypes(Activity act) {
         strTypes = new ArrayList<String>();
+        this.act = act;
     }
 
     @Override
@@ -61,29 +63,31 @@ public class fetchTypes extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid){
         JSONObject jObject = null;
-        String typ = "";
 
         try {
             jObject = new JSONObject(data);
 
             // Get type/types
-            JSONArray types = new JSONArray(jObject.getString("type"));
+            JSONArray types = new JSONArray(jObject.getString("results"));
+
             for(int i=0; i<types.length(); i++){
                 JSONObject type = new JSONObject(types.getString(i));
                 //JSONObject type2  = new JSONObject(type.getString("type"));
                 strTypes.add(type.getString("name"));
+                Log.i("logtest", type.getString("name"));
             }
+
+            Log.i("logtest", "" + strTypes.size());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        // Set info
-        MainActivity.txtDisplay.setText(this.results);
-
-//        // Set img types
-        for(int i=0; i<strTypes.size(); i++){
-            MainActivity.types = strTypes;
+        if (act != null) {
+            if (act instanceof MainActivity) {
+                ((MainActivity) act).tipos = strTypes;
+                ((MainActivity) act).TypeSearch();
+            }
         }
-
     }
 }
+

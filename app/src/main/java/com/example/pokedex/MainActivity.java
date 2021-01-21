@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
@@ -15,8 +16,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
@@ -26,7 +37,7 @@ public class MainActivity extends AppCompatActivity{
     public static ImageView imgPok;
     protected int contador = 1;
     protected String count;
-    public static ArrayList<String> types= new ArrayList<String>();
+    public ArrayList<String> tipos= new ArrayList<String>();
 
     public static ImageView [] imgType;
 
@@ -34,6 +45,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         count = "1";
         fetchData process = new fetchData(count);
         process.execute();
@@ -56,9 +68,12 @@ public class MainActivity extends AppCompatActivity{
         ImageButton btnTypes = findViewById(R.id.btnTypes);
         btnTypes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                TypeSearch();
+                fetchTypes process = new fetchTypes(act);
+                process.execute();
+
             }
         });
+
         final Button btnLeft = findViewById(R.id.btnLeft);
         btnLeft.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -110,18 +125,32 @@ public class MainActivity extends AppCompatActivity{
         });
         alert.show();
     }
+
     public void TypeSearch(){
+        Log.i("logtest", "-------->" + tipos.size());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Elige un tipo:")
-                .setItems(types.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                .setItems(changeArrayListToArray(tipos), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         int type = which + 1;
                         Log.i("logtest","" + (which+1));
-                        fetchTypes pokemons = new fetchTypes(Integer.toString(type));
-                        pokemons.execute();
+
                     }
                 });
-        builder.create().show();
+        builder.show();
     }
+
+
+    public String[] changeArrayListToArray (ArrayList<String> types){
+        String [] tipos = new String[types.size()];
+
+        for(int i=0; i<types.size();i++){
+            tipos[i] = types.get(i);
+        }
+
+        return tipos;
+    }
+
 
 }
